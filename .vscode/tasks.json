@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start Local Web Server",
+			"type": "shell",
+			"command": "cd d:\\UltraWebServer\\wwwssl\\shoelace.bootstrap.grid && python -m http.server 8000",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}
