@@ -21,8 +21,14 @@
                 <li><a class="btn btn-shoelace btn-update hidden"><i class="icon-cloud-upload"> </i>Update</a></li>
                 <li><a class="btn btn-shoelace btn-preview hidden"><i class="icon-eye-open"> </i>Preview</a></li>
                 <li><a class="btn btn-shoelace btn-edit hidden"><i class="icon-pencil"> </i>Edit</a></li>
-                <li><a class="btn btn-shoelace btn-edit" href="mailto:feedback@shoelace.io"><i class="icon-envelope">
-                        </i>Send Feedback!</a></li>
+                <li>
+                    <label for="bootstrap-version-select" class="sr-only">Bootstrap Version</label>
+                    <select id="bootstrap-version-select" class="btn btn-shoelace" style="padding:6px 10px;color: white;">
+                        <option value="3">Bootstrap 3</option>
+                        <option value="4">Bootstrap 4</option>
+                        <option value="5">Bootstrap 5</option>
+                    </select>
+                </li>
             </ul>
         </div>
     </header>
@@ -114,7 +120,7 @@
     </div>
     <footer>
         <ul>
-            <li><a href="http://www.helloerik.com/">ReDesign by Fabio L.</a></li>
+            <li><a href="https://github.com/bigbear2/shoelace.bootstrap.grid/">ReDesign by Fabio L.</a></li>
             <li><a href="https://www.getbootstrap.com/">Get Bootstrap</a></li>
         </ul>
     </footer>
@@ -124,7 +130,9 @@
     <script type="text/javascript">
         // Stubs for removed external libraries and services
         window.html_beautify = function (html) {
-            return html;
+            let htmlString = html;
+            const indentSize=4,tempDiv=document.createElement("div");function formatElement(e,t=0){let n=" ".repeat(4*t),r="";if(e.nodeType===Node.TEXT_NODE){let o=e.textContent.trim();return o&&(r+=n+o+"\n"),r}if(e.nodeType===Node.ELEMENT_NODE){let l=n+"<"+e.tagName.toLowerCase();for(let m=0;m<e.attributes.length;m++){let a=e.attributes[m];l+=` ${a.name}="${a.value}"`}l+=">",r+=l+"\n";for(let d=0;d<e.childNodes.length;d++)r+=formatElement(e.childNodes[d],t+1);r+=n+"</"+e.tagName.toLowerCase()+">\n"}return r}tempDiv.innerHTML=htmlString.trim();let formattedHTML="";for(let i=0;i<tempDiv.childNodes.length;i++)formattedHTML+=formatElement(tempDiv.childNodes[i]); 
+            return formattedHTML.trim();;
         };
         window.PR = {
             prettyPrint: function () {
@@ -155,8 +163,69 @@
         };
     </script>
     <script type="text/javascript" src="js/cljs.js"></script>
+
+    <script type="text/javascript">
+        // Bootstrap version transform - simple event-driven approach (NO MutationObserver)
+        (function () {
+            function transformForBootstrap(version, content) {
+                console.log("Transforming content for Bootstrap version:", version, content);
+                if (!content) return content;
+                if (version === '3') return content;
+                var out = content;
+                out = out.replace(/col-xs-(\d+)/g, 'col-$1');
+                out = out.replace(/col-([a-z]+)-offset-(\d+)/g, 'offset-$1-$2');
+                out = out.replace(/img-responsive/g, 'img-fluid');
+                out = out.replace(/center-block/g, 'mx-auto d-block');
+                out = out.replace(/hidden-xs/g, 'd-none d-sm-block')
+                    .replace(/hidden-sm/g, 'd-sm-none d-md-block')
+                    .replace(/hidden-md/g, 'd-md-none d-lg-block')
+                    .replace(/visible-xs-block/g, 'd-block d-sm-none');
+                if (version === '4') {
+                    out = out.replace(/pull-left/g, 'float-left').replace(/pull-right/g, 'float-right');
+                } else if (version === '5') {
+                    out = out.replace(/pull-left/g, 'float-start').replace(/pull-right/g, 'float-end');
+                    out = out.replace(/mr-([0-5])/g, 'me-$1').replace(/ml-([0-5])/g, 'ms-$1');
+                }
+                return out;
+            }
+
+            function applyTransform() {
+                var select = document.getElementById('bootstrap-version-select');
+                if (!select) return;
+                var version = select.value;
+
+                var preHtml = document.querySelector('.output.prettyprint.lang-html.markup');
+                if (preHtml) {
+                    var rawHtml = preHtml.textContent || preHtml.innerText || '';
+                    var transformed = transformForBootstrap(version, rawHtml);
+                    if (transformed !== rawHtml) preHtml.textContent = transformed;
+                }
+
+                var preMixins = document.querySelector('.output.prettyprint.lang-text.mixins');
+                if (preMixins) {
+                    var rawMixins = preMixins.textContent || preMixins.innerText || '';
+                    var transformed = transformForBootstrap(version, rawMixins);
+                    if (transformed !== rawMixins) preMixins.textContent = transformed;
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                var select = document.getElementById('bootstrap-version-select');
+                if (!select) return;
+
+                // Only apply transform on explicit user actions
+                select.addEventListener('change', applyTransform);
+
+                // Apply when user clicks on output tabs
+                document.querySelectorAll('.options li').forEach(function (li) {
+                    li.addEventListener('click', function () {
+                        setTimeout(applyTransform, 50);
+                    });
+                });
+            });
+        })();
+    </script>
 </body>
 
-<!-- Mirrored from shoelace.komercialize.com.br/ by HTTrack Website Copier/3.x [XR&CO'2014], Sun, 01 Oct 2023 20:01:37 GMT -->
 
 </html>
