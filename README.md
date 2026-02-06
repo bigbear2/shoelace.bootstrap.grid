@@ -1,4 +1,4 @@
-# Shoelace - Visual Bootstrap 3 Grid Builder
+# Shoelace - Visual Bootstrap 3.4.1, 4.6.x, 5.3.x Grid Builder
 
 <p align="center">
 	<img src="https://raw.githubusercontent.com/bigbear2/shoelace.bootstrap.grid/main/css/img/shoelace-logo.png" alt="Shoelace logo">
